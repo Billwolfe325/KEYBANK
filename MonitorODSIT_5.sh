@@ -106,7 +106,6 @@ fi
 #      if remote is locked, local is already set as standby
 #
 ############################################################
-# If not here is the rest
 
 
 checkCMOD $LOCAL

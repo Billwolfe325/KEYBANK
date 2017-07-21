@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 ##  Key Bank failover script  ####################
 #
 #   Version 3
@@ -9,38 +9,41 @@
 ##################################################
 # Set Variables
 #
-# Instance of OnDemand
-INSTANCE="CMOSIT"
-#
 #Start OnDemand  "$(which arssockd)"
 CMOD_BIN="/apps/IBM/ondemand/V9.5/bin"
 #path to TSM  "$(which dsmsrv)"
 TSM_BIN="/apps/IBM/tivoli/tsm"
 LOCK="/app/IBM/locks/failover.lock"
 ##################################################
-
+# Function to check for lockfile
+checkLock() {
+	if ssh -qn "$USER"@"$1" "[ -f "$LOCK" ]";then
+	return 1
+	else
+	return 0
+fi;
+}
 
 #Determine active/passive server
 
 servers=(SDC01TCMOAPP02 SDC01TCMOAPP03)
 
-if [[ ("$(hostname)" == ${servers[0]}) ]]; then
-    activeCMOD=${servers[0]}
-	standybyCMOD=${servers[1]}
-fi
-
-if [[ ("$(hostname)" == ${servers[1]}) ]]; then
-	activeCMOD=${servers[1]}
-	standybyCMOD=${servers[0]}
-fi
+# Determine Local and Remote Server
+for server in "${servers[@]}"
+do
+if [[ ("$(hostname)" == "$server") ]]; then
+  readonly LOCAL="$server"
+if [[ ("$(hostname)") != "$server" ]]; then
+  readonly REMOTE="$server"
+done
 
 
 #check for lockfile
-if [ -f "$LOCK" ]; then
+checkLock()
 	echo "Lock prevented Script from running on $(activeCMOD) at $(date)" >> /app/IBM/logs/Failover.log &
 	exit 1
 else
-	echo "No lock, Script ran on $(activeCMOD) at $(date)" >> /app/IBM/logs/Failover.log &
+	echo "Script ran on $(activeCMOD) at $(date)" >> /app/IBM/logs/Failover.log &
 
 fi
 #create lock file;
@@ -53,7 +56,7 @@ set -m
 trap 'list=$( jobs -rp ); test -n "$list" && kill $list' CHLD
 
 # Start OnDemand
-"$CMOD_BIN" arssockd -I "$INSTANCE" &
+"$CMOD_BIN" arssockd -h "$LOCAL" &
 
 # Start Tivoli
 "$TSM_BIN" dsmserv -quiet &
