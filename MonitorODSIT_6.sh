@@ -41,8 +41,9 @@ checkLock() {
 fi;
 }
 # Function to start ODF
-
+Start ODF function here
 # Function to start FTS
+Start FTS function 
 
 # END OF FUNCTION LIST ##############################################
 #####################################################################
