@@ -13,9 +13,9 @@ readonly ODF="SDC01TCM0APP07"
 readonly ARSBIN="/apps/IBM/ondemand/V9.5/bin"
 readonly TSMBIN="/apps/IBM/tivoli/tsm/"
 readonly ODFBIN="/apps/IBM/bin"
-mkdir -p "/apps/IBM/locks"
+mkdir -p /apps/IBM/locks
 readonly LOCK="/app/IBM/locks/CMODStart.lock"
-mkdir -p "/apps/IBM/logs"
+mkdir -p /apps/IBM/logs
 readonly LOGFILE="/app/IBM/logs/failover.log"
 readonly USER="CMOSCHEM"
 servers=(SDC01TCMOAPP02 SDC01TCMOAPP03)
